@@ -11,7 +11,7 @@ Panel(
   vardir,
   iter.update = 3,
   iter.mcmc = 2000,
-  thin = 1,
+  thin = 2,
   burn.in = 1000,
   tau.e = 1,
   tau.v = 1,

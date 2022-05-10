@@ -2,7 +2,7 @@ Package: saeHB.panel
 Type: Package
 Title: Small Area Estimation using Hierarchical Bayesian Method for Rao
         Yu Model
-Version: 0.1.0
+Version: 0.1.1
 Author: Velia Tri Marliana [aut, cre], Azka Ubaidillah [aut]
 Maintainer: Velia Tri Marliana <221810642@stis.ac.id>
 Description: We designed this package to provide several functions for area level of small area estimation using hierarchical Bayesian (HB) method. This package provides model using panel data for variable interest.This package also provides a dataset produced by a data generation. The 'rjags' package is employed to obtain parameter estimates. Model-based estimators involves the HB estimators which include the mean and the variation of mean. For the reference, see Rao and Molina (2015).
@@ -18,6 +18,6 @@ Imports: stringr, coda, rjags, stats, grDevices, graphics
 SystemRequirements: JAGS (http://mcmc-jags.sourceforge.net)
 Depends: R (>= 2.10)
 NeedsCompilation: no
-Packaged: 2022-03-02 02:57:22 UTC; velia
+Packaged: 2022-05-10 00:25:38 UTC; velia
 Repository: CRAN
-Date/Publication: 2022-03-03 09:00:06 UTC
+Date/Publication: 2022-05-10 12:40:02 UTC

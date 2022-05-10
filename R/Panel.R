@@ -43,7 +43,7 @@
 #'
 
 Panel<-function( formula, area, period, vardir, iter.update=3, iter.mcmc=2000,
-                 thin = 1, burn.in =1000, tau.e = 1, tau.v=1, data){
+                 thin = 2, burn.in =1000, tau.e = 1, tau.v=1, data){
 
   result <- list(Est = NA, refVar = NA, coefficient = NA, plot = NA)
   formuladata <- model.frame(formula, data, na.action = NULL)
@@ -168,6 +168,56 @@ Panel<-function( formula, area, period, vardir, iter.update=3, iter.mcmc=2000,
     q_beta <- (Quantiles[2:(nvar+1),])
     beta <- cbind(beta, q_beta)
     Estimation <- data.frame(Estimation,q_mu)
+    mean_est = matrix(0, t, m)
+    sd_est = matrix(0, t, m)
+    est1 = matrix(0, t, m)
+    est2 = matrix(0, t, m)
+    est3 = matrix(0, t, m)
+    est4 = matrix(0, t, m)
+    est5 = matrix(0, t, m)
+
+    k=0
+    for (i in 1:t) {
+      for (j in 1:m) {
+        k=k+1
+        mean_est[i,j] = Estimation[k,1]
+        sd_est[i,j] = Estimation[k,2]
+        est1[i,j] = Estimation[k,3]
+        est2[i,j] = Estimation[k,4]
+        est3[i,j] = Estimation[k,5]
+        est4[i,j] = Estimation[k,6]
+        est5[i,j] = Estimation[k,7]
+      }
+    }
+    mean_est = t(mean_est)
+    sd_est = t(sd_est)
+    est1 = t(est1)
+    est2 = t(est2)
+    est3 = t(est3)
+    est4 = t(est4)
+    est5 = t(est5)
+    Mean_est = c()
+    Sd_est = c()
+    Est1 = c()
+    Est2 = c()
+    Est3 = c()
+    Est4 = c()
+    Est5 = c()
+
+    k = 0
+    for (i in 1:m) {
+      for (j in 1:t) {
+        k=k+1
+        Mean_est[k] = mean_est[i,j]
+        Sd_est[k] = sd_est[i,j]
+        Est1[k] = est1[i,j]
+        Est2[k] = est2[i,j]
+        Est3[k] = est3[i,j]
+        Est4[k] = est4[i,j]
+        Est5[k] = est5[i,j]
+      }
+    }
+    Estimation <- data.frame(Mean_est, Sd_est, Est1, Est2, Est3, Est4, Est5)
     colnames(Estimation) <- c("MEAN","SD","2.5%","25%","50%","75%","97.5%")
   }else{
     Y = as.matrix(na.omit(y))
@@ -272,34 +322,136 @@ Panel<-function( formula, area, period, vardir, iter.update=3, iter.mcmc=2000,
     a.var=result_samps$statistics[1]
     beta=result_samps$statistics[2:(nvar+1),1:2]
     rownames(beta) <- b.varnames
-    mu=result_samps$statistics[(nvar+2):(NS*t+nvar+1),1:2]
-    muT=result_samps$statistics[(NS*t+nvar+2):(m*t+nvar+1),1:2]
-    result_s =merge(result_samps$statistics, result_samps$quantiles,by=0)
+    mu_stat=result_samps$statistics[(nvar+2):(NS*t+nvar+1),1:2]
+    mu_quant = result_samps$quantiles[(nvar+2):(NS*t+nvar+1),]
+    mu = cbind(mu_stat, mu_quant )
+    muT_stat=result_samps$statistics[(NS*t+nvar+2):(m*t+nvar+1),1:2]
+    muT_quant=result_samps$quant[(NS*t+nvar+2):(m*t+nvar+1),]
+    muT = cbind(muT_stat, muT_quant)
 
-    mu.start = nvar+2
-    muT.end = nrow(data) + mu.start -1
-    muT.start = muT.end - NTS*t +1
-    result_all = result_s[mu.start:muT.end,-1]
-    result_all= data.frame(data,result_all)
-    idx.mu = mu.start
-    idx.muT = muT.start
+    Mu_mean_est = matrix(0, t, m)
+    Mu_sd_est = matrix(0, t, m)
+    Mu_est1 = matrix(0, t, m)
+    Mu_est2 = matrix(0, t, m)
+    Mu_est3 = matrix(0, t, m)
+    Mu_est4 = matrix(0, t, m)
+    Mu_est5 = matrix(0, t, m)
+
+    k=0
+    for (i in 1:t) {
+      for (j in 1:(m-length(rowNA))) {
+        k=k+1
+        Mu_mean_est[i,j] = mu[k,1]
+        Mu_sd_est[i,j] = mu[k,2]
+        Mu_est1[i,j] = mu[k,3]
+        Mu_est2[i,j] = mu[k,4]
+        Mu_est3[i,j] = mu[k,5]
+        Mu_est4[i,j] = mu[k,6]
+        Mu_est5[i,j] = mu[k,7]
+      }
+    }
+    Mu_mean_est = t(Mu_mean_est)
+    Mu_sd_est = t(Mu_sd_est)
+    Mu_est1 = t(Mu_est1)
+    Mu_est2 = t(Mu_est2)
+    Mu_est3 = t(Mu_est3)
+    Mu_est4 = t(Mu_est4)
+    Mu_est5 = t(Mu_est5)
+    Mu_Mean_est = c()
+    Mu_Sd_est = c()
+    Mu_Est1 = c()
+    Mu_Est2 = c()
+    Mu_Est3 = c()
+    Mu_Est4 = c()
+    Mu_Est5 = c()
+
+    k = 0
+    for (i in 1:(m-length(rowNA))) {
+      for (j in 1:t) {
+        k=k+1
+        Mu_Mean_est[k] = Mu_mean_est[i,j]
+        Mu_Sd_est[k] = Mu_sd_est[i,j]
+        Mu_Est1[k] = Mu_est1[i,j]
+        Mu_Est2[k] = Mu_est2[i,j]
+        Mu_Est3[k] = Mu_est3[i,j]
+        Mu_Est4[k] = Mu_est4[i,j]
+        Mu_Est5[k] = Mu_est5[i,j]
+      }
+    }
+    mu <- data.frame(Mu_Mean_est, Mu_Sd_est, Mu_Est1, Mu_Est2, Mu_Est3, Mu_Est4, Mu_Est5)
+    colnames(mu) <- c("MEAN", "SD", "2.5%", "25%", "50%", "75%", "97.5%")
+
+    MuT_mean_est = matrix(0, t, m)
+    MuT_sd_est = matrix(0, t, m)
+    MuT_est1 = matrix(0, t, m)
+    MuT_est2 = matrix(0, t, m)
+    MuT_est3 = matrix(0, t, m)
+    MuT_est4 = matrix(0, t, m)
+    MuT_est5 = matrix(0, t, m)
+
+    k=0
+    for (i in 1:t) {
+      for (j in 1:(length(rowNA))) {
+        k=k+1
+        MuT_mean_est[i,j] = muT[k,1]
+        MuT_sd_est[i,j] = muT[k,2]
+        MuT_est1[i,j] = muT[k,3]
+        MuT_est2[i,j] = muT[k,4]
+        MuT_est3[i,j] = muT[k,5]
+        MuT_est4[i,j] = muT[k,6]
+        MuT_est5[i,j] = muT[k,7]
+      }
+    }
+    MuT_mean_est = t(MuT_mean_est)
+    MuT_sd_est = t(MuT_sd_est)
+    MuT_est1 = t(MuT_est1)
+    MuT_est2 = t(MuT_est2)
+    MuT_est3 = t(MuT_est3)
+    MuT_est4 = t(MuT_est4)
+    MuT_est5 = t(MuT_est5)
+    MuT_Mean_est = c()
+    MuT_Sd_est = c()
+    MuT_Est1 = c()
+    MuT_Est2 = c()
+    MuT_Est3 = c()
+    MuT_Est4 = c()
+    MuT_Est5 = c()
+
+    k = 0
+    for (i in 1:(length(rowNA))) {
+      for (j in 1:t) {
+        k=k+1
+        MuT_Mean_est[k] = MuT_mean_est[i,j]
+        MuT_Sd_est[k] = MuT_sd_est[i,j]
+        MuT_Est1[k] = MuT_est1[i,j]
+        MuT_Est2[k] = MuT_est2[i,j]
+        MuT_Est3[k] = MuT_est3[i,j]
+        MuT_Est4[k] = MuT_est4[i,j]
+        MuT_Est5[k] = MuT_est5[i,j]
+      }
+    }
+    muT <- data.frame(MuT_Mean_est, MuT_Sd_est, MuT_Est1, MuT_Est2, MuT_Est3, MuT_Est4, MuT_Est5)
+    colnames(muT) <- c("MEAN", "SD", "2.5%", "25%", "50%", "75%", "97.5%")
+
+    rho=result_samps$statistics[(m*t+nvar+2),1:2]
+    coef <- rbind(beta,rho)
+    result_all = rbind(mu,muT)
+    idx.mu = 1
+    idx.muT = 1
     idx = 0
     for(i in 1:m){
       for(j in 1:t){
         idx=idx+1
         if(data[idx,2] %in% rowNA){
-          result_all[idx,(ncol(data)+1):ncol(result_all)]<-result_s[idx.muT,-1]
+          result_all[idx,]<-muT[idx.muT,]
           idx.muT = idx.muT+1
         }else{
-          result_all[idx,(ncol(data)+1):ncol(result_all)]<-result_s[idx.mu,-1]
+          result_all[idx,]<-mu[idx.mu,]
           idx.mu = idx.mu+1
         }
       }
     }
-    Mu = result_all[, c("Mean", "SD", "X2.5.", "X25.", "X50.", "X75.", "X97.5.")]
-    Estimation = data.frame(Mu)
-    colnames(Estimation) <- c("MEAN", "SD", "2.5%", "25%", "50%", "75%", "97.5%")
-    rownames(Estimation) <- c(1:(m*t))
+    Estimation = data.frame(result_all)
     q_beta <- result_samps$quantiles[2:(nvar+1),]
     beta <- cbind(beta,q_beta)
 
